@@ -1,12 +1,13 @@
 import java.awt.Button
 import java.awt.Color
+import java.awt.Component
 import java.awt.Font
 import javax.swing.JPanel
 import javax.swing.border.LineBorder
 
 class ControlsPanel {
     val playButton: Button
-    val jPanel: JPanel
+    val jPanel: Component
 
     init {
         playButton = initPlayButton()
@@ -19,10 +20,12 @@ class ControlsPanel {
         }
     }
 
-    private fun initJPanel(): JPanel {
-        val jPanel = JPanel()
-        jPanel.border = LineBorder(Color.ORANGE, 10)
-        jPanel.add(playButton)
+    private fun initJPanel(): Component {
+        val jPanel = JPanel().apply {
+            border = LineBorder(Color.ORANGE, 10)
+        }.run {
+            add(playButton)
+        }
         return jPanel
     }
 }
