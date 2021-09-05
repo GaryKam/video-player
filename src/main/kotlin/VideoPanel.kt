@@ -1,22 +1,25 @@
 import javafx.beans.binding.Bindings
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.embed.swing.JFXPanel
 import javafx.scene.Scene
 import javafx.scene.layout.StackPane
 import javafx.scene.media.Media
 import javafx.scene.media.MediaPlayer
 import javafx.scene.media.MediaView
-import java.awt.*
+import java.awt.Color
+import java.awt.Component
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
 import java.io.File
 import javax.swing.JPanel
 import javax.swing.border.LineBorder
 
 class VideoPanel {
     val jPanel: Component
+    var playing = SimpleBooleanProperty(false)
     private val jfxPanel: JFXPanel
     private val jfxPanel2: JFXPanel
     private val mediaPlayers = mutableListOf<MediaPlayer>()
-    var playing = false
-        private set
 
     init {
         jfxPanel = initJfxPanel()
@@ -25,7 +28,7 @@ class VideoPanel {
     }
 
     fun playVideo() {
-        playing = true
+        playing.value = true
         if (mediaPlayers.isNotEmpty()) {
             mediaPlayers.forEach { mediaPlayer -> mediaPlayer.play() }
             return
@@ -52,20 +55,20 @@ class VideoPanel {
         mediaPlayer.setOnEndOfMedia {
             mediaPlayers.remove(mediaPlayer)
             if (mediaPlayers.isEmpty()) {
-                playing = false
+                playing.value = false
             }
         }
         mediaPlayer2.setOnEndOfMedia {
             mediaPlayers.remove(mediaPlayer2)
             if (mediaPlayers.isEmpty()) {
-                playing = false
+                playing.value = false
             }
         }
         mediaPlayers.addAll(listOf(mediaPlayer, mediaPlayer2))
     }
 
     fun pauseVideo() {
-        playing = false
+        playing.value = false
         mediaPlayers.forEach { mediaPlayer -> mediaPlayer.pause() }
     }
 
