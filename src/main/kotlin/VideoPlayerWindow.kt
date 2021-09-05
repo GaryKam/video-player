@@ -45,7 +45,13 @@ class VideoPlayerWindow {
     private fun initControls() {
         controlsPanel.playButton.addActionListener {
             Platform.runLater {
-                videoPanel.playVideo()
+                if (videoPanel.playing) {
+                    videoPanel.pauseVideo()
+                    controlsPanel.playButton.label = "Play"
+                } else {
+                    videoPanel.playVideo()
+                    controlsPanel.playButton.label = "Pause"
+                }
             }
         }
     }

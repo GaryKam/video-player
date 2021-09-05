@@ -14,6 +14,9 @@ class VideoPanel {
     val jPanel: Component
     private val jfxPanel: JFXPanel
     private val jfxPanel2: JFXPanel
+    private val mediaPlayers = mutableListOf<MediaPlayer>()
+    var playing = false
+        private set
 
     init {
         jfxPanel = initJfxPanel()
@@ -22,38 +25,44 @@ class VideoPanel {
     }
 
     fun playVideo() {
+        playing = true
         val videoFile = File("bread.mp4")
-
         val media = Media(videoFile.toURI().toString())
         val mediaPlayer = MediaPlayer(media)
         val mediaView = MediaView(mediaPlayer).apply {
             fitWidthProperty().bind(Bindings.selectDouble(sceneProperty(), "width"))
             fitHeightProperty().bind(Bindings.selectDouble(sceneProperty(), "height"))
         }
-
         val media2 = Media(videoFile.toURI().toString())
         val mediaPlayer2 = MediaPlayer(media2)
         val mediaView2 = MediaView(mediaPlayer2).apply {
             fitWidthProperty().bind(Bindings.selectDouble(sceneProperty(), "width"))
             fitHeightProperty().bind(Bindings.selectDouble(sceneProperty(), "height"))
         }
-
         jfxPanel.scene = Scene(StackPane(mediaView), javafx.scene.paint.Color.BLACK)
         jfxPanel2.scene = Scene(StackPane(mediaView2), javafx.scene.paint.Color.BLACK)
+        mediaPlayer.setOnReady { mediaPlayer.play() }
+        mediaPlayer2.setOnReady { mediaPlayer2.play() }
+        mediaPlayer.setOnError { println("Error") }
+        mediaPlayer2.setOnError { println("Error2") }
+        mediaPlayer.setOnEndOfMedia {
+            mediaPlayers.remove(mediaPlayer)
+            if (mediaPlayers.isEmpty()) {
+                playing = false
+            }
+        }
+        mediaPlayer2.setOnEndOfMedia {
+            mediaPlayers.remove(mediaPlayer2)
+            if (mediaPlayers.isEmpty()) {
+                playing = false
+            }
+        }
+        mediaPlayers.addAll(listOf(mediaPlayer, mediaPlayer2))
+    }
 
-        mediaPlayer.setOnReady {
-            mediaPlayer.play()
-        }
-        mediaPlayer.setOnError {
-            println("Error")
-        }
-
-        mediaPlayer2.setOnReady {
-            mediaPlayer2.play()
-        }
-        mediaPlayer2.setOnError {
-            println("Error")
-        }
+    fun pauseVideo() {
+        playing = false
+        mediaPlayers.forEach { mediaPlayer -> mediaPlayer.pause() }
     }
 
     private fun initJfxPanel(): JFXPanel {
