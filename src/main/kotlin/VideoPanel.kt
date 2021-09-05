@@ -26,6 +26,10 @@ class VideoPanel {
 
     fun playVideo() {
         playing = true
+        if (mediaPlayers.isNotEmpty()) {
+            mediaPlayers.forEach { mediaPlayer -> mediaPlayer.play() }
+            return
+        }
         val videoFile = File("bread.mp4")
         val media = Media(videoFile.toURI().toString())
         val mediaPlayer = MediaPlayer(media)
