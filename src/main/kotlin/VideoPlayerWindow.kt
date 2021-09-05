@@ -1,5 +1,9 @@
 import javafx.application.Platform
-import java.awt.*
+import javafx.stage.DirectoryChooser
+import javafx.stage.Stage
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import javax.swing.JFrame
 
@@ -52,6 +56,13 @@ class VideoPlayerWindow {
         }
         videoPanel.playing.addListener { _, _, newValue ->
             controlsPanel.playButton.label = if (newValue) "Pause" else "Play"
+        }
+        controlsPanel.mediaButton.addActionListener {
+            Platform.runLater {
+                videoPanel.setMedia(DirectoryChooser().apply {
+                    title = "Select media directory"
+                }.showDialog(Stage()))
+            }
         }
     }
 

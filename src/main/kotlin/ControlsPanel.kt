@@ -1,16 +1,14 @@
-import java.awt.Button
-import java.awt.Color
-import java.awt.Component
-import java.awt.Font
+import java.awt.*
 import javax.swing.JPanel
-import javax.swing.border.LineBorder
 
 class ControlsPanel {
-    val playButton: Button
     val jPanel: Component
+    val playButton: Button
+    val mediaButton: Button
 
     init {
         playButton = initPlayButton()
+        mediaButton = initMediaButton()
         jPanel = initJPanel()
     }
 
@@ -20,11 +18,26 @@ class ControlsPanel {
         }
     }
 
+    private fun initMediaButton(): Button {
+        return Button("Media").apply {
+            font = Font("Tahoma", Font.PLAIN, 15)
+        }
+    }
+
     private fun initJPanel(): Component {
         val jPanel = JPanel().apply {
-            border = LineBorder(Color.ORANGE, 10)
-        }.run {
-            add(playButton)
+            background = Color.BLACK
+            layout = GridBagLayout()
+        }
+        jPanel.run {
+            val constraints = GridBagConstraints()
+            add(playButton, constraints.apply {
+                weightx = 1.0
+            })
+            add(mediaButton, constraints.apply {
+                weightx = 0.0
+                gridx = 1
+            })
         }
         return jPanel
     }

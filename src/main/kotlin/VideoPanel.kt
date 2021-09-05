@@ -11,29 +11,32 @@ import java.awt.Component
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.io.File
+import java.io.FilenameFilter
 import javax.swing.JPanel
-import javax.swing.border.LineBorder
 
 class VideoPanel {
     val jPanel: Component
     var playing = SimpleBooleanProperty(false)
-    private val jfxPanel: JFXPanel
-    private val jfxPanel2: JFXPanel
+    private val jfxPanel: JFXPanel = JFXPanel()
+    private val jfxPanel2: JFXPanel = JFXPanel()
+    private val media = mutableListOf<File>()
     private val mediaPlayers = mutableListOf<MediaPlayer>()
 
     init {
-        jfxPanel = initJfxPanel()
-        jfxPanel2 = initJfxPanel()
         jPanel = initJPanel()
     }
 
     fun playVideo() {
+        if (media.isEmpty()) {
+            playing.value = false
+            return
+        }
         playing.value = true
         if (mediaPlayers.isNotEmpty()) {
             mediaPlayers.forEach { mediaPlayer -> mediaPlayer.play() }
             return
         }
-        val videoFile = File("bread.mp4")
+        val videoFile = media.random()
         val media = Media(videoFile.toURI().toString())
         val mediaPlayer = MediaPlayer(media)
         val mediaView = MediaView(mediaPlayer).apply {
@@ -72,16 +75,20 @@ class VideoPanel {
         mediaPlayers.forEach { mediaPlayer -> mediaPlayer.pause() }
     }
 
-    private fun initJfxPanel(): JFXPanel {
-        val jfxPanel = JFXPanel().apply {
-            border = LineBorder(Color.RED, 10)
+    fun setMedia(directory: File?) {
+        if (directory != null) {
+            pauseVideo()
+            mediaPlayers.clear()
+            media.clear()
+            media.addAll(directory.listFiles(FilenameFilter { _, name -> name.endsWith(".mp4") })!!)
         }
-        return jfxPanel
     }
 
     private fun initJPanel(): Component {
         val jPanel = JPanel().apply {
-            layout = GridBagLayout()
+            layout = GridBagLayout().apply {
+                background = Color.BLACK
+            }
         }
         jPanel.run {
             val constraints = GridBagConstraints()
