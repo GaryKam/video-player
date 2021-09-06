@@ -5,11 +5,13 @@ import javax.swing.JPanel
 class ControlsPanel {
     val jPanel: Component
     val playButton: Button
+    val nextButton: Button
     val mediaButton: Button
     val scenesButton: JComboBox<String>
 
     init {
         playButton = initPlayButton()
+        nextButton = initNextButton()
         mediaButton = initMediaButton()
         scenesButton = initScenesButton()
         jPanel = initJPanel()
@@ -17,6 +19,12 @@ class ControlsPanel {
 
     private fun initPlayButton(): Button {
         return Button("Play").apply {
+            font = Font("Tahoma", Font.PLAIN, 15)
+        }
+    }
+
+    private fun initNextButton(): Button {
+        return Button("Next").apply {
             font = Font("Tahoma", Font.PLAIN, 15)
         }
     }
@@ -39,14 +47,20 @@ class ControlsPanel {
         jPanel.run {
             val constraints = GridBagConstraints()
             add(playButton, constraints.apply {
-                weightx = 1.0
+
+            })
+            add(nextButton, constraints.apply {
+                weightx = 0.0
+                gridx = 1
+                insets = Insets(0, 0, 0, 200)
             })
             add(mediaButton, constraints.apply {
                 weightx = 0.0
-                gridx = 1
+                gridx = 2
+                insets = Insets(0, 0, 0, 0)
             })
             add(scenesButton, constraints.apply {
-                gridx = 2
+                gridx = 3
             })
         }
         return jPanel

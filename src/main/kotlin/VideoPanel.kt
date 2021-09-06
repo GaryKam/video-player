@@ -16,10 +16,12 @@ import javax.swing.JPanel
 class VideoPanel {
     val jPanel: JPanel
     var playing = SimpleBooleanProperty(false)
+    var videoCount = 1
+        private set
     private val jfxPanels = mutableListOf<JFXPanel>()
     private val media = mutableListOf<File>()
     private val mediaPlayers = mutableListOf<MediaPlayer>()
-    private var videoCount = 1
+
 
     init {
         jPanel = initJPanel()

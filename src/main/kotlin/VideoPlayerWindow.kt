@@ -57,6 +57,11 @@ class VideoPlayerWindow {
         videoPanel.playing.addListener { _, _, newValue ->
             controlsPanel.playButton.label = if (newValue) "Pause" else "Play"
         }
+        controlsPanel.nextButton.addActionListener {
+            Platform.runLater {
+                videoPanel.setVideoCount(videoPanel.videoCount)
+            }
+        }
         controlsPanel.mediaButton.addActionListener {
             Platform.runLater {
                 videoPanel.setSource(DirectoryChooser().apply {
