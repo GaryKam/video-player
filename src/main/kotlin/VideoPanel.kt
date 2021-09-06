@@ -11,6 +11,7 @@ import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.io.File
 import java.io.FilenameFilter
+import javax.swing.JOptionPane
 import javax.swing.JPanel
 
 class VideoPanel {
@@ -30,6 +31,7 @@ class VideoPanel {
     fun playVideos() {
         if (media.isEmpty()) {
             playing.value = false
+            JOptionPane.showMessageDialog(null, "No media found!")
             return
         }
         playing.value = true
@@ -50,15 +52,25 @@ class VideoPanel {
 
     fun setSource(directory: File?) {
         if (directory != null) {
-            stopVideos()
-            media.clear()
-            media.addAll(directory.listFiles(FilenameFilter { _, name -> name.endsWith(".mp4") })!!)
+            val videos = directory.listFiles(FilenameFilter { _, name -> name.endsWith(".mp4") })!!
+            if (videos.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "No media found!")
+            } else {
+                stopVideos()
+                media.clear()
+                media.addAll(videos)
+            }
         }
     }
 
     fun setVideoCount(count: Int) {
         videoCount = count
-        initJfxPanels()
+        if (media.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "No media found!")
+        } else {
+            stopVideos()
+            initJfxPanels()
+        }
     }
 
     private fun initJPanel(): JPanel {
@@ -70,7 +82,6 @@ class VideoPanel {
     }
 
     private fun initJfxPanels() {
-        stopVideos()
         repeat(videoCount) { initVideo() }
         jPanel.run {
             removeAll()

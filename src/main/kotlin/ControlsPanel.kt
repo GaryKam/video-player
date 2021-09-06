@@ -46,11 +46,8 @@ class ControlsPanel {
         }
         jPanel.run {
             val constraints = GridBagConstraints()
-            add(playButton, constraints.apply {
-
-            })
+            add(playButton, constraints)
             add(nextButton, constraints.apply {
-                weightx = 0.0
                 gridx = 1
                 insets = Insets(0, 0, 0, 200)
             })
