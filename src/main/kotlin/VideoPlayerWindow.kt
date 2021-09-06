@@ -48,9 +48,9 @@ class VideoPlayerWindow {
         controlsPanel.playButton.addActionListener {
             Platform.runLater {
                 if (videoPanel.playing.value) {
-                    videoPanel.pauseVideo()
+                    videoPanel.pauseVideos()
                 } else {
-                    videoPanel.playVideo()
+                    videoPanel.playVideos()
                 }
             }
         }
@@ -59,9 +59,14 @@ class VideoPlayerWindow {
         }
         controlsPanel.mediaButton.addActionListener {
             Platform.runLater {
-                videoPanel.setMedia(DirectoryChooser().apply {
-                    title = "Select media directory"
+                videoPanel.setSource(DirectoryChooser().apply {
+                    title = "Select source directory"
                 }.showDialog(Stage()))
+            }
+        }
+        controlsPanel.scenesButton.addActionListener {
+            Platform.runLater {
+                videoPanel.setVideoCount(controlsPanel.scenesButton.selectedIndex + 1)
             }
         }
     }

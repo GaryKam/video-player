@@ -7,7 +7,6 @@ import javafx.scene.media.Media
 import javafx.scene.media.MediaPlayer
 import javafx.scene.media.MediaView
 import java.awt.Color
-import java.awt.Component
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.io.File
@@ -15,18 +14,18 @@ import java.io.FilenameFilter
 import javax.swing.JPanel
 
 class VideoPanel {
-    val jPanel: Component
+    val jPanel: JPanel
     var playing = SimpleBooleanProperty(false)
-    private val jfxPanel: JFXPanel = JFXPanel()
-    private val jfxPanel2: JFXPanel = JFXPanel()
+    private val jfxPanels = mutableListOf<JFXPanel>()
     private val media = mutableListOf<File>()
     private val mediaPlayers = mutableListOf<MediaPlayer>()
+    private var videoCount = 1
 
     init {
         jPanel = initJPanel()
     }
 
-    fun playVideo() {
+    fun playVideos() {
         if (media.isEmpty()) {
             playing.value = false
             return
@@ -36,71 +35,94 @@ class VideoPanel {
             mediaPlayers.forEach { mediaPlayer -> mediaPlayer.play() }
             return
         }
-        val videoFile = media.random()
-        val media = Media(videoFile.toURI().toString())
-        val mediaPlayer = MediaPlayer(media)
-        val mediaView = MediaView(mediaPlayer).apply {
-            fitWidthProperty().bind(Bindings.selectDouble(sceneProperty(), "width"))
-            fitHeightProperty().bind(Bindings.selectDouble(sceneProperty(), "height"))
+        initJfxPanels()
+        mediaPlayers.forEach { mediaPlayer ->
+            mediaPlayer.setOnReady { mediaPlayer.play() }
         }
-        val media2 = Media(videoFile.toURI().toString())
-        val mediaPlayer2 = MediaPlayer(media2)
-        val mediaView2 = MediaView(mediaPlayer2).apply {
-            fitWidthProperty().bind(Bindings.selectDouble(sceneProperty(), "width"))
-            fitHeightProperty().bind(Bindings.selectDouble(sceneProperty(), "height"))
-        }
-        jfxPanel.scene = Scene(StackPane(mediaView), javafx.scene.paint.Color.BLACK)
-        jfxPanel2.scene = Scene(StackPane(mediaView2), javafx.scene.paint.Color.BLACK)
-        mediaPlayer.setOnReady { mediaPlayer.play() }
-        mediaPlayer2.setOnReady { mediaPlayer2.play() }
-        mediaPlayer.setOnError { println("Error") }
-        mediaPlayer2.setOnError { println("Error2") }
-        mediaPlayer.setOnEndOfMedia {
-            mediaPlayers.remove(mediaPlayer)
-            if (mediaPlayers.isEmpty()) {
-                playing.value = false
-            }
-        }
-        mediaPlayer2.setOnEndOfMedia {
-            mediaPlayers.remove(mediaPlayer2)
-            if (mediaPlayers.isEmpty()) {
-                playing.value = false
-            }
-        }
-        mediaPlayers.addAll(listOf(mediaPlayer, mediaPlayer2))
     }
 
-    fun pauseVideo() {
+    fun pauseVideos() {
         playing.value = false
         mediaPlayers.forEach { mediaPlayer -> mediaPlayer.pause() }
     }
 
-    fun setMedia(directory: File?) {
+    fun setSource(directory: File?) {
         if (directory != null) {
-            pauseVideo()
-            mediaPlayers.clear()
+            stopVideos()
             media.clear()
             media.addAll(directory.listFiles(FilenameFilter { _, name -> name.endsWith(".mp4") })!!)
         }
     }
 
-    private fun initJPanel(): Component {
-        val jPanel = JPanel().apply {
+    fun setVideoCount(count: Int) {
+        videoCount = count
+        initJfxPanels()
+    }
+
+    private fun initJPanel(): JPanel {
+        return JPanel().apply {
             layout = GridBagLayout().apply {
                 background = Color.BLACK
             }
         }
+    }
+
+    private fun initJfxPanels() {
+        stopVideos()
+        repeat(videoCount) { initVideo() }
         jPanel.run {
+            removeAll()
             val constraints = GridBagConstraints()
-            add(jfxPanel, constraints.apply {
-                fill = GridBagConstraints.BOTH
-                weightx = 1.0
-                weighty = 1.0
-            })
-            add(jfxPanel2, constraints.apply {
-                gridy = 1
-            })
+            var x = 0
+            var y = 0
+            for (i in 0 until videoCount) {
+                add(jfxPanels[i], constraints.apply {
+                    fill = GridBagConstraints.BOTH
+                    weightx = 1.0
+                    weighty = 1.0
+                    gridx = x
+                    gridy = y++
+                })
+                if (y == 2) {
+                    y = 0
+                    x++
+                }
+            }
+            revalidate()
+            repaint()
         }
-        return jPanel
+    }
+
+    private fun initVideo() {
+        val mediaFile = media.random()
+        val media = Media(mediaFile.toURI().toString())
+        val mediaPlayer = MediaPlayer(media)
+        val mediaView = MediaView(mediaPlayer).apply {
+            fitWidthProperty().bind(Bindings.selectDouble(sceneProperty(), "width"))
+            fitHeightProperty().bind(Bindings.selectDouble(sceneProperty(), "height"))
+        }
+        JFXPanel().apply {
+            scene = Scene(StackPane(mediaView), javafx.scene.paint.Color.BLACK)
+        }.also {
+            jfxPanels.add(it)
+        }
+        mediaPlayer.apply {
+            setOnError { println("Media Player Error") }
+            setOnEndOfMedia {
+                mediaPlayers.remove(mediaPlayer)
+                if (mediaPlayers.isEmpty()) {
+                    playing.value = false
+                }
+            }
+        }.also {
+            mediaPlayers.add(it)
+        }
+    }
+
+    private fun stopVideos() {
+        playing.value = false
+        mediaPlayers.forEach { mediaPlayer -> mediaPlayer.stop() }
+        mediaPlayers.clear()
+        jfxPanels.clear()
     }
 }
