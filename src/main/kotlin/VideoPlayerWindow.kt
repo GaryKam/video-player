@@ -55,7 +55,7 @@ class VideoPlayerWindow {
             }
         }
         videoPanel.playing.addListener { _, _, newValue ->
-            controlsPanel.playButton.label = if (newValue) "Pause" else "Play"
+            controlsPanel.updatePlayButton(newValue)
         }
         controlsPanel.nextButton.addActionListener {
             Platform.runLater {

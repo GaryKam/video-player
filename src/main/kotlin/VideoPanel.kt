@@ -31,7 +31,8 @@ class VideoPanel {
     fun playVideos() {
         if (media.isEmpty()) {
             playing.value = false
-            JOptionPane.showMessageDialog(null, "No media found!")
+            JOptionPane.showMessageDialog(
+                null, "No media found!", "", JOptionPane.INFORMATION_MESSAGE)
             return
         }
         playing.value = true
@@ -54,7 +55,8 @@ class VideoPanel {
         if (directory != null) {
             val videos = directory.listFiles(FilenameFilter { _, name -> name.endsWith(".mp4") })!!
             if (videos.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "No media found!")
+                JOptionPane.showMessageDialog(
+                    null, "No media found!", "", JOptionPane.INFORMATION_MESSAGE)
             } else {
                 stopVideos()
                 media.clear()
@@ -66,7 +68,8 @@ class VideoPanel {
     fun setVideoCount(count: Int) {
         videoCount = count
         if (media.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No media found!")
+            JOptionPane.showMessageDialog(
+                null, "No media found!", "", JOptionPane.INFORMATION_MESSAGE)
         } else {
             stopVideos()
             initJfxPanels()
